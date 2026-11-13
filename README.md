@@ -5,6 +5,9 @@
 <p align="center"><a href="LICENSE">MIT · Ufodia</a> &nbsp; / &nbsp; TypeScript &nbsp; / &nbsp; Local simulation &nbsp; / &nbsp; No API key</p>
 <p align="center"><a href="https://buymeacoffee.com/ufodia"><img src="docs/assets/coffee.svg" alt="Buy Ufodia a coffee" width="190" height="46"></a></p>
 
+
+**[Open the live app ↗](https://agent-crash-lab-lyart.vercel.app/)** · [Deployment guide](docs/DEPLOYMENT.md)
+
 ## A retry is not always a recovery
 
 An invoice can be delivered even when its acknowledgment never arrives. Retrying blindly creates a second delivery. A clean-looking final message hides the mistake.
