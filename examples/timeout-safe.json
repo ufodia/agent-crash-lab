@@ -1,0 +1,87 @@
+{
+  "format": "agent-crash-lab/1",
+  "scenario": "timeout-after-commit",
+  "policy": "safe",
+  "snapshots": [
+    {
+      "event": {
+        "step": 1,
+        "label": "Task accepted",
+        "detail": "Deliver invoice INV-104. Logical operation ID: invoice:104.",
+        "tone": "info",
+        "node": "agent"
+      },
+      "effects": [],
+      "value": "Waiting",
+      "violations": 0
+    },
+    {
+      "event": {
+        "step": 2,
+        "label": "Request dispatched",
+        "detail": "Attach stable idempotency key invoice:104.",
+        "tone": "info",
+        "node": "network"
+      },
+      "effects": [],
+      "value": "Waiting",
+      "violations": 0
+    },
+    {
+      "event": {
+        "step": 3,
+        "label": "Server commits",
+        "detail": "The delivery is durable before the client receives a response.",
+        "tone": "success",
+        "node": "store"
+      },
+      "effects": [
+        "invoice:104"
+      ],
+      "value": "Invoice delivered",
+      "violations": 0
+    },
+    {
+      "event": {
+        "step": 4,
+        "label": "Receipt lost",
+        "detail": "A timeout hides a successful commit. The outcome is unknown to the caller.",
+        "tone": "warning",
+        "node": "network"
+      },
+      "effects": [
+        "invoice:104"
+      ],
+      "value": "Invoice delivered",
+      "violations": 0
+    },
+    {
+      "event": {
+        "step": 5,
+        "label": "Retry begins",
+        "detail": "Reuse the original key; do not infer failure from a timeout.",
+        "tone": "warning",
+        "node": "agent"
+      },
+      "effects": [
+        "invoice:104"
+      ],
+      "value": "Invoice delivered",
+      "violations": 0
+    },
+    {
+      "event": {
+        "step": 6,
+        "label": "Existing result returned",
+        "detail": "The server recognizes the key and returns the original result.",
+        "tone": "success",
+        "node": "store"
+      },
+      "effects": [
+        "invoice:104"
+      ],
+      "value": "Invoice delivered",
+      "violations": 0
+    }
+  ]
+}
