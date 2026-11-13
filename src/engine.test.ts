@@ -42,4 +42,11 @@ describe('replay boundaries', () => {
     const t = simulate('timeout-after-commit', 'safe'); t.snapshots[0].event.step = 99;
     expect(() => parseTrace(JSON.stringify(t))).toThrow();
   });
+  it('discards unchecked extension data so a valid import stays exportable', () => {
+    const trace = simulate('timeout-after-commit', 'safe');
+    const text = JSON.stringify(trace).slice(0, -1) + ',"extension":' + '['.repeat(20000) + '0' + ']'.repeat(20000) + '}';
+    const parsed = parseTrace(text);
+    expect(parsed).toEqual(trace);
+    expect(() => JSON.stringify(parsed)).not.toThrow();
+  });
 });

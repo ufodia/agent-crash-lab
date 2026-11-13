@@ -1,6 +1,6 @@
 # Browser verification
 
-The automated workbench test exercises real inputs/exports, then checks a 390px viewport for horizontal overflow and collects uncaught browser errors. PosterProof also runs the actual bundled OCR worker; no API key or model service is required.
+The automated workbench suite exercises simulated side effects, scenario switching, trace export/replay, and a 390px viewport. A controlled delayed-file regression verifies that a newer scenario selection wins over an older pending import. No API key or model service is required.
 
 ```sh
 npm ci

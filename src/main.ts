@@ -19,13 +19,14 @@ let scenario: ScenarioId = 'timeout-after-commit';
 let cursor = 0;
 let timer: ReturnType<typeof setInterval> | null = null;
 let imported: Trace | null = null;
+let traceLoad = 0;
 const scenarioList = byId('scenarios');
 for (const [index, spec] of scenarios.entries()) {
   const button = document.createElement('button'); button.className = 'scenario'; button.dataset.id = spec.id;
   const count = document.createElement('span'); count.className = 'scenario-number'; count.textContent = String(index + 1).padStart(2, '0');
   const content = document.createElement('span'); const title = document.createElement('strong'); title.textContent = spec.name;
   const caption = document.createElement('small'); caption.textContent = spec.caption; content.append(title, caption); button.append(count, content);
-  button.addEventListener('click', () => { stop(); scenario = spec.id; imported = null; cursor = 0; render(); }); scenarioList.append(button);
+  button.addEventListener('click', () => { traceLoad++; stop(); scenario = spec.id; imported = null; cursor = 0; render(); }); scenarioList.append(button);
 }
 function traces() { return [imported ?? simulate(scenario, 'naive'), simulate(scenario, 'safe')]; }
 function maximum() { const [a,b] = traces(); return imported ? a.snapshots.length : Math.max(a.snapshots.length, b.snapshots.length); }
@@ -68,15 +69,16 @@ byId('play').addEventListener('click', () => {
   timer = setInterval(tick, Number(byId<HTMLSelectElement>('pace').value)); byId('play').textContent = 'Ⅱ Pause'; tick();
 });
 byId('step').addEventListener('click', () => { stop(); cursor = Math.min(cursor + 1, maximum()); render(); });
-byId('reset').addEventListener('click', () => { stop(); cursor = 0; render(); });
+byId('reset').addEventListener('click', () => { traceLoad++; stop(); cursor = 0; render(); });
 byId('pace').addEventListener('change', () => { if (timer) { stop(); render(); } });
 function download(name: string, value: unknown) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
 byId('export').addEventListener('click', () => { if (imported) download(`${scenario}-imported.json`, imported); else for (const trace of traces()) download(`${scenario}-${trace.policy}.json`, trace); });
-byId('import').addEventListener('click', () => byId<HTMLInputElement>('trace-file').click());
+byId('import').addEventListener('click', () => { traceLoad++; byId<HTMLInputElement>('trace-file').value = ''; byId<HTMLInputElement>('trace-file').click(); });
 byId('trace-file').addEventListener('change', async () => {
   const input = byId<HTMLInputElement>('trace-file'); const file = input.files?.[0]; if (!file) return;
-  try { if (file.size > 2_000_000) throw new Error('Choose a JSON trace smaller than 2 MB.'); const trace = parseTrace(await file.text()); stop(); imported = trace; scenario = trace.scenario; cursor = 0; byId('error').hidden = true; render(); }
-  catch (error) { byId('error').textContent = error instanceof Error ? error.message : 'Could not read trace.'; byId('error').hidden = false; }
-  input.value = '';
+  const load = ++traceLoad;
+  try { if (file.size > 2_000_000) throw new Error('Choose a JSON trace smaller than 2 MB.'); const text = await file.text(); if (load !== traceLoad) return; const trace = parseTrace(text); stop(); imported = trace; scenario = trace.scenario; cursor = 0; byId('error').hidden = true; render(); }
+  catch (error) { if (load === traceLoad) { byId('error').textContent = error instanceof Error ? error.message : 'Could not read trace.'; byId('error').hidden = false; } }
+  finally { if (load === traceLoad) input.value = ''; }
 });
 render();

@@ -26,3 +26,22 @@ test('local workbench: analysis, evidence, export and responsive layout',async({
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1)).toBe(false);
   expect(errors).toEqual([]);
 });
+
+test('a delayed trace cannot replace a newer scenario selection',async({page})=>{
+  await page.addInitScript(()=>{
+    const original=File.prototype.text;
+    File.prototype.text=async function(){
+      if(this.name==='delayed.json')await new Promise(resolve=>{window.releaseImport=resolve;});
+      const text=await original.call(this);window.importReadFinished=true;return text;
+    };
+  });
+  await page.goto('/');
+  const trace={format:'agent-crash-lab/1',scenario:'timeout-after-commit',policy:'safe',snapshots:[{event:{step:1,label:'Imported',detail:'Pending old import',tone:'info',node:'agent'},effects:[],value:'Imported',violations:0}]};
+  await page.locator('#trace-file').setInputFiles({name:'delayed.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(trace))});
+  await expect.poll(()=>page.evaluate(()=>typeof window.releaseImport)).toBe('function');
+  await page.locator('.scenario').nth(1).click();
+  await page.evaluate(()=>window.releaseImport());
+  await expect.poll(()=>page.evaluate(()=>window.importReadFinished)).toBe(true);
+  await expect(page.locator('#scenario-caption')).toHaveText('DUPLICATE DELIVERY');
+  await expect(page.locator('#left-name')).toHaveText('Naive policy');
+});

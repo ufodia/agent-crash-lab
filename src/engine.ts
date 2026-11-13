@@ -79,7 +79,13 @@ export function parseTrace(text: string): Trace {
     const e = s.event as Record<string, unknown> | undefined;
     if (!e || e.step !== index + 1 || typeof e.label !== 'string' || typeof e.detail !== 'string' || e.label.length > 200 || e.detail.length > 5000 || !['agent', 'network', 'store'].includes(e.node as string) || !['info', 'success', 'warning', 'failure'].includes(e.tone as string) || !Array.isArray(s.effects) || s.effects.length > 5000 || s.effects.some(v => typeof v !== 'string' || v.length > 200) || typeof s.value !== 'string' || s.value.length > 1000 || !Number.isInteger(s.violations) || (s.violations as number) < 0 || (s.violations as number) > 1_000_000) throw new Error(`Invalid snapshot at step ${index + 1}.`);
   }
-  return t as unknown as Trace;
+  // Keep only the documented, validated fields. Unchecked extension data can be
+  // deeply nested and must not break replay exports after an otherwise valid import.
+  const snapshots = (t.snapshots as Snapshot[]).map(s => ({
+    event: { step: s.event.step, label: s.event.label, detail: s.event.detail, tone: s.event.tone, node: s.event.node },
+    effects: [...s.effects], value: s.value, violations: s.violations,
+  }));
+  return { format: 'agent-crash-lab/1', scenario: t.scenario as ScenarioId, policy: t.policy as Policy, snapshots };
 }
 
 export function atStep(trace: Trace, cursor: number): Snapshot | null {

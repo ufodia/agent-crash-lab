@@ -39,6 +39,6 @@ Each exported file is one trace. You can import a built-in export unchanged or g
 | `value` | Displayed observable state; string up to 1,000 characters |
 | `violations` | Integer from 0 through 1,000,000, determined by the producer |
 
-The browser rejects files larger than 2,000,000 bytes. The parser additionally limits the serialized string to 2,000,000 JavaScript characters. Keep adapters well below both limits. Unknown extra fields are not displayed or executed.
+The browser rejects files larger than 2,000,000 bytes. The parser additionally limits the serialized string to 2,000,000 JavaScript characters. Keep adapters well below both limits. Unknown extra fields are discarded on import and are not included in replay exports.
 
 Repeated effect IDs are deliberately valid: they represent duplicated physical effects of one logical operation. The format does not prove completeness, chronology outside the supplied sequence, or integrity against tampering.
