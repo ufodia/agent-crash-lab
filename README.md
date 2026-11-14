@@ -86,6 +86,14 @@ Tests cover duplicate commits, partial-batch recovery, stale writes, out-of-orde
 | [Security](SECURITY.md) | Private vulnerability reporting |
 | [Changelog](CHANGELOG.md) | Versioned changes |
 
+## More from ufodia
+
+Explore more open-source tools by [ufodia](https://github.com/ufodia):
+
+- [Sheet Sentry](https://github.com/ufodia/sheet-sentry) — review spreadsheet changes, including edits made by AI tools.
+- [CutOnce](https://github.com/ufodia/cutonce) — plan rectangular parts on irregular material offcuts in your browser.
+- [Browse all repositories](https://github.com/ufodia?tab=repositories).
+
 ## Keep the lab open
 
 If an experiment helped you catch a risky retry or explain a failure to your team, [buy Ufodia a coffee](https://buymeacoffee.com/ufodia). Contributions fund maintenance, clearer examples, and new failure scenarios. You can also contribute a small reproducible case or improve the docs.
