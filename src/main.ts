@@ -78,7 +78,7 @@ byId('trace-file').addEventListener('change', async () => {
   const input = byId<HTMLInputElement>('trace-file'); const file = input.files?.[0]; if (!file) return;
   const load = ++traceLoad;
   try { if (file.size > 2_000_000) throw new Error('Choose a JSON trace smaller than 2 MB.'); const text = await file.text(); if (load !== traceLoad) return; const trace = parseTrace(text); stop(); imported = trace; scenario = trace.scenario; cursor = 0; byId('error').hidden = true; render(); }
-  catch (error) { if (load === traceLoad) { byId('error').textContent = error instanceof Error ? error.message : 'Could not read trace.'; byId('error').hidden = false; } }
+  catch (error) { if (load === traceLoad) { byId('error').textContent = error instanceof SyntaxError ? 'This is not valid Agent Crash Lab trace JSON. Choose a JSON file exported in the documented format.' : error instanceof Error ? error.message : 'Could not read trace.'; byId('error').hidden = false; } }
   finally { if (load === traceLoad) input.value = ''; }
 });
 render();

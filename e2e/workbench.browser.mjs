@@ -21,7 +21,16 @@ test('local workbench: analysis, evidence, export and responsive layout',async({
       await page.locator('.scenario').nth(1).click();for(let n=0;n<6;n++)await page.locator('#step').click();
       done.push('Naive duplicate vs guarded single commit','Reset','Real exported trace replay','Scenario switch');
   await page.screenshot({path:testInfo.outputPath('desktop.png'),fullPage:false});
-  await page.setViewportSize({width:390,height:844});
+  for(const width of [390,768]){
+    await page.setViewportSize({width,height:844});
+    const lastScenario=page.locator('.scenario').last();
+    await lastScenario.scrollIntoViewIfNeeded();
+    const bounds=await lastScenario.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x+bounds.width).toBeLessThanOrEqual(width);
+    await lastScenario.click();
+    await expect(lastScenario).toHaveClass(/selected/);
+  }
   await page.screenshot({path:testInfo.outputPath('mobile.png'),fullPage:false});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1)).toBe(false);
   expect(errors).toEqual([]);
