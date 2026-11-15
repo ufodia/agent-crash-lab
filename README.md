@@ -98,6 +98,8 @@ Explore more open-source tools by [ufodia](https://github.com/ufodia):
 
 If an experiment helped you catch a risky retry or explain a failure to your team, [buy Ufodia a coffee](https://buymeacoffee.com/ufodia). Contributions fund maintenance, clearer examples, and new failure scenarios. You can also contribute a small reproducible case or improve the docs.
 
+You can also [sponsor ufodia on GitHub](https://github.com/sponsors/ufodia).
+
 Licensed under the [MIT License](LICENSE). Copyright © 2026 **Ufodia**.
 
 ## Browser checks
